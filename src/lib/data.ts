@@ -43,7 +43,12 @@ export async function getData(userId: string) {
     }),
     db.aIChat.findUnique({
       where: { userId },
-      include: { messages: { orderBy: { createdAt: "asc" }, take: 100 } },
+      include: {
+        messages: {
+          orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+          take: 100,
+        },
+      },
     }),
   ]);
   return {
@@ -55,7 +60,8 @@ export async function getData(userId: string) {
     events,
     focus,
     notifications,
-    messages: chat?.messages ?? [],
+    messages: (chat?.messages ?? []).reverse(),
+    aiConfigured: Boolean(process.env.OPENAI_API_KEY),
   };
 }
 export type AppData = Awaited<ReturnType<typeof getData>>;

@@ -34,6 +34,10 @@ export function Assistant() {
         </Button>
       </div>
       <section className="card chat-card">
+        <div className="chat-service">
+          <span className={data.aiConfigured ? "configured" : "disconnected"} />
+          {t(data.aiConfigured ? "aiConfigured" : "aiNotConfigured")}
+        </div>
         <div className="chat-messages">
           {!data.messages.length && (
             <div className="chat-welcome">
@@ -43,7 +47,7 @@ export function Assistant() {
               <h2>{t("assistantTitle")}</h2>
               <p>{t("assistantSub")}</p>
               <div>
-                {["recommendation", "plannerSub", "analyticsSub"].map((k) => (
+                {["promptToday", "promptWeek", "promptExam"].map((k) => (
                   <button key={k} onClick={() => setMessage(t(k))}>
                     {t(k)}
                     <ArrowUp size={14} />
@@ -105,6 +109,17 @@ export function Assistant() {
             onChange={(e) => setMessage(e.target.value)}
             rows={2}
             maxLength={3000}
+            onKeyDown={(e) => {
+              if (
+                e.key === "Enter" &&
+                !e.shiftKey &&
+                !e.nativeEvent.isComposing
+              ) {
+                e.preventDefault();
+                if (!busy && message.trim())
+                  e.currentTarget.form?.requestSubmit();
+              }
+            }}
           />
           <Button
             size="icon"
@@ -114,6 +129,7 @@ export function Assistant() {
             <ArrowUp size={20} />
           </Button>
         </form>
+        <span className="chat-character-count">{message.length}/3000</span>
         <p className="chat-disclaimer">{t("assistantHint")}</p>
       </section>
     </>

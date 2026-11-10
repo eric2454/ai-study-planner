@@ -56,6 +56,48 @@ test("register → onboard → subject → task → plan → calendar → comple
   await expect(
     page.getByText("Build a compiler", { exact: true }),
   ).toBeVisible();
+  await page.goto("/data");
+  await page
+    .getByRole("textbox", { name: "Search your workspace…" })
+    .fill("compiler");
+  await expect(page.locator(".data-table tbody tr")).toHaveCount(1);
+  await page
+    .getByRole("button", { name: "Edit Build a compiler", exact: true })
+    .click();
+  await page
+    .getByRole("dialog")
+    .getByLabel("Description", { exact: true })
+    .fill("Reviewed in the data table");
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Save changes" })
+    .click();
+  await expect(
+    page.getByText("Reviewed in the data table", { exact: true }),
+  ).toBeVisible();
+  const [download] = await Promise.all([
+    page.waitForEvent("download"),
+    page.getByRole("button", { name: "Export CSV", exact: true }).click(),
+  ]);
+  expect(download.suggestedFilename()).toBe("study-planner-tasks.csv");
+  await page
+    .locator(".data-summary")
+    .getByRole("button", { name: /Subjects/ })
+    .click();
+  await page
+    .getByRole("button", { name: "Edit Computer Science", exact: true })
+    .click();
+  await page
+    .getByRole("dialog")
+    .getByLabel("Teacher", { exact: true })
+    .fill("Dr. Test");
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Save changes" })
+    .click();
+  await expect(
+    page.getByRole("cell", { name: "Dr. Test", exact: true }),
+  ).toBeVisible();
   await page.goto("/ai-planner");
   await page
     .getByRole("button", { name: "Generate study plan", exact: true })
@@ -140,6 +182,7 @@ test("register → onboard → subject → task → plan → calendar → comple
     for (const route of [
       "dashboard",
       "tasks",
+      "data",
       "subjects",
       "ai-planner",
       "calendar",

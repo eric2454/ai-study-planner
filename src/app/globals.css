@@ -1,4 +1,166 @@
 @import "tailwindcss";
+
+.data-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 24px;
+}
+.data-summary-card {
+  text-align: left;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--border);
+}
+.data-summary-card.selected {
+  border-color: var(--primary);
+  background: var(--soft);
+}
+.data-summary-card > span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.data-summary-card strong {
+  font-size: 30px;
+}
+.data-summary-card small {
+  color: var(--muted);
+}
+.data-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+}
+.data-toolbar select {
+  width: auto;
+  font-size: 12px;
+}
+.data-table-scroll {
+  overflow: auto;
+  max-width: 100%;
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  min-width: 720px;
+  font-size: 12px;
+}
+.data-table th {
+  background: var(--soft);
+  color: var(--muted);
+  font-weight: 550;
+  font-size: 11px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.data-table td {
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.data-table tbody tr:hover {
+  background: var(--soft);
+}
+.data-title {
+  text-align: left;
+  font-weight: 600;
+  max-width: 260px;
+  overflow-wrap: anywhere;
+  padding: 0;
+}
+.data-table td > small {
+  display: block;
+  color: var(--muted);
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 5px;
+}
+.data-color {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: none;
+}
+.data-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 17px 20px;
+}
+.data-pagination > span {
+  font-size: 11px;
+  color: var(--muted);
+}
+.chat-service {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 12px 22px;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--muted);
+}
+.chat-service > span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #e4ad64;
+}
+.chat-service .configured {
+  background: #65b49b;
+}
+.chat-character-count {
+  display: block;
+  text-align: right;
+  padding: 0 28px;
+  color: var(--muted);
+  font-size: 9px;
+}
+@media (max-width: 767px) {
+  .data-summary {
+    gap: 9px;
+  }
+  .data-summary-card {
+    padding: 15px 12px;
+  }
+  .data-summary-card strong {
+    font-size: 24px;
+  }
+  .data-summary-card > span {
+    font-size: 10px;
+  }
+  .data-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+  }
+  .data-toolbar > .inline {
+    flex-wrap: wrap;
+  }
+  .data-toolbar .search-input {
+    max-width: none;
+  }
+  .data-toolbar select {
+    flex: 1;
+  }
+  .data-pagination {
+    padding: 14px;
+    flex-wrap: wrap;
+  }
+  .data-pagination .btn {
+    font-size: 10px;
+  }
+}
 @custom-variant dark (&:where(.dark, .dark *));
 :root {
   --bg: #f7f8fc;

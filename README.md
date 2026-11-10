@@ -4,6 +4,9 @@
 
 ## What works
 
+- **My data (`/data`)**: account-scoped tables for tasks, subjects and study sessions; text search, status filters, sorting, 20-row pages, editing/deletion through authorized APIs and filtered CSV export. Spreadsheet formula prefixes are escaped. These are personal academic records, not a database administration console.
+- **Study assistant**: real question suggestions, Enter to send / Shift+Enter for a new line, a character counter, a server-reported configuration indicator and the latest 100 messages shown in chronological order. A configured API key does not guarantee provider availability; failures remain explicitly labeled.
+
 - Kazakh by default, Russian and English dictionaries with compile-time key parity; saved account language, timezone and theme.
 - Landing page, email/password registration, login, remembered sessions, logout and protected workspace routes. bcrypt password hashing; password changes and resets invalidate previous sessions.
 - Personal dashboard calculated from records: tasks, deadlines, completed work, recorded study time, subject progress and weekly activity. New accounts start empty.

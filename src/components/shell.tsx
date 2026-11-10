@@ -26,6 +26,7 @@ import {
   ArrowUpRight,
   Check,
   Trash2,
+  Database,
 } from "lucide-react";
 import { useI18n } from "./providers";
 import { useWorkspace } from "./workspace-context";
@@ -41,6 +42,7 @@ const nav = [
       ["tasks", "/tasks", ListTodo],
       ["subjects", "/subjects", BookOpen],
       ["calendar", "/calendar", CalendarDays],
+      ["dataManager", "/data", Database],
     ],
   },
   {

@@ -353,4 +353,23 @@ describe.skipIf(!enabled)("real PostgreSQL API integration", () => {
     ).not.toBeNull();
     currentUser = first;
   });
+  it("returns the latest 100 chat messages in chronological order", async () => {
+    const chat = await prisma.aIChat.create({ data: { userId: first } });
+    const base = Date.now() - 200000;
+    await prisma.aIMessage.createMany({
+      data: Array.from({ length: 105 }, (_, i) => ({
+        chatId: chat.id,
+        role: "user",
+        source: "user",
+        content: `message-${i}`,
+        createdAt: new Date(base + i * 1000),
+      })),
+    });
+    const { getData } = await import("../src/lib/data");
+    const result = await getData(first);
+    expect(result.messages).toHaveLength(100);
+    expect(result.messages[0].content).toBe("message-5");
+    expect(result.messages[99].content).toBe("message-104");
+    expect(typeof result.aiConfigured).toBe("boolean");
+  });
 });
