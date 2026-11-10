@@ -1,0 +1,9 @@
+import { Suspense } from "react";
+import { Onboarding } from "@/components/onboarding";
+export default function Page() {
+  return (
+    <Suspense>
+      <Onboarding />
+    </Suspense>
+  );
+}

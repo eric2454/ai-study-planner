@@ -1,0 +1,221 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+enum Status {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+}
+enum Priority {
+  HIGH
+  MEDIUM
+  LOW
+}
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+model User {
+  id String @id @default(cuid())
+  name String
+  email String @unique
+  emailVerified DateTime?
+  passwordHash String
+  image String?
+  university String @default("")
+  faculty String @default("")
+  specialty String @default("")
+  year Int @default(1)
+  sessionVersion Int @default(0)
+  onboarded Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  accounts Account[]
+  sessions Session[]
+  settings UserSettings?
+  subjects Subject[]
+  tasks Task[]
+  plans StudyPlan[]
+  studySessions StudySession[]
+  events CalendarEvent[]
+  focusSessions FocusSession[]
+  notifications Notification[]
+  chats AIChat[]
+  resetTokens PasswordReset[]
+}
+model Account {
+  id String @id @default(cuid())
+  userId String
+  type String
+  provider String
+  providerAccountId String
+  refresh_token String? @db.Text
+  access_token String? @db.Text
+  expires_at Int?
+  token_type String?
+  scope String?
+  id_token String? @db.Text
+  session_state String?
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  @@unique([provider,providerAccountId])
+}
+model Session {
+  id String @id @default(cuid())
+  sessionToken String @unique
+  userId String
+  expires DateTime
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  @@index([userId])
+}
+model UserSettings {
+  id String @id @default(cuid())
+  userId String @unique
+  language String @default("kk")
+  theme String @default("light")
+  timezone String @default("Asia/Almaty")
+  dailyMinutes Int @default(180)
+  startTime String @default("09:00")
+  endTime String @default("20:00")
+  studyDays Int[] @default([1,2,3,4,5])
+  sessionMinutes Int @default(50)
+  breakMinutes Int @default(10)
+  reminders Boolean @default(true)
+  reminderHours Int[] @default([24,3,1])
+  browserNotifications Boolean @default(false)
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+}
+model Subject {
+  id String @id @default(cuid())
+  userId String
+  name String
+  teacher String @default("")
+  description String @default("")
+  color String @default("#6366f1")
+  icon String @default("book")
+  semester String @default("")
+  createdAt DateTime @default(now())
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  tasks Task[]
+  @@index([userId])
+}
+model Task {
+  id String @id @default(cuid())
+  userId String
+  subjectId String?
+  title String
+  description String @default("")
+  notes String @default("")
+  deadline DateTime
+  priority Priority @default(MEDIUM)
+  difficulty Difficulty @default(MEDIUM)
+  status Status @default(TODO)
+  estimatedMinutes Int @default(60)
+  completedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  subject Subject? @relation(fields:[subjectId],references:[id],onDelete:SetNull)
+  sessions StudySession[]
+  focusSessions FocusSession[]
+  @@index([userId,status,deadline])
+}
+model StudyPlan {
+  id String @id @default(cuid())
+  userId String
+  source String @default("algorithm")
+  explanation String @default("")
+  start DateTime
+  end DateTime
+  createdAt DateTime @default(now())
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  sessions StudySession[]
+  @@index([userId,createdAt])
+}
+model StudySession {
+  id String @id @default(cuid())
+  userId String
+  planId String?
+  taskId String?
+  title String
+  start DateTime
+  end DateTime
+  kind String @default("study")
+  reason String @default("")
+  completed Boolean @default(false)
+  completedAt DateTime?
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  plan StudyPlan? @relation(fields:[planId],references:[id],onDelete:Cascade)
+  task Task? @relation(fields:[taskId],references:[id],onDelete:SetNull)
+  @@index([userId,start,end])
+}
+model CalendarEvent {
+  id String @id @default(cuid())
+  userId String
+  title String
+  start DateTime
+  end DateTime
+  color String @default("#2563eb")
+  type String @default("personal")
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  @@index([userId,start,end])
+}
+model FocusSession {
+  id String @id @default(cuid())
+  userId String
+  taskId String?
+  start DateTime @default(now())
+  end DateTime?
+  duration Int @default(25)
+  completed Boolean @default(false)
+  elapsedSeconds Int @default(0)
+  resumedAt DateTime? @default(now())
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  task Task? @relation(fields:[taskId],references:[id],onDelete:SetNull)
+  @@index([userId,start])
+}
+model Notification {
+  id String @id @default(cuid())
+  userId String
+  key String @unique
+  title String
+  type String
+  read Boolean @default(false)
+  dismissed Boolean @default(false)
+  createdAt DateTime @default(now())
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  @@index([userId,read,createdAt])
+}
+model AIChat {
+  id String @id @default(cuid())
+  userId String @unique
+  createdAt DateTime @default(now())
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  messages AIMessage[]
+}
+model AIMessage {
+  id String @id @default(cuid())
+  chatId String
+  role String
+  content String @db.Text
+  source String @default("openai")
+  createdAt DateTime @default(now())
+  chat AIChat @relation(fields:[chatId],references:[id],onDelete:Cascade)
+  @@index([chatId,createdAt])
+}
+model PasswordReset {
+  id String @id @default(cuid())
+  userId String
+  tokenHash String @unique
+  expires DateTime
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+}
+model RateLimit {
+  key String @id
+  count Int @default(1)
+  expires DateTime
+}
